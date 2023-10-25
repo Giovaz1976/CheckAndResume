@@ -31,9 +31,9 @@ namespace CheckAndResume
 
                
 
-                //using NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM events.events_log where event_code  <> '99401' and event_code in ('XX000');", sourceConnection);
-                using NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM events.events_log where event_code in ('99401','XX000','P0001','99999','99480','99409','99403','99400','42P01','42883','42846','42809','42804','42803','42704','42703','42702','42601','3F000','2D000','23505','22P02','22023','22012','22007','22004','22003','22001','21000','0A000') AND event_datetime AT TIME ZONE 'CST7CDT' BETWEEN CURRENT_TIMESTAMP - INTERVAL '10 minutes' AND CURRENT_TIMESTAMP;", sourceConnection);
-                //using NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM events.events_log where event_code  <> '99401' and event_code in ('XX000','P0001','99999','99480','99409','99403','99400','42P01','42883','42846','42809','42804','42803','42704','42703','42702','42601','3F000','2D000','23505','22P02','22023','22012','22007','22004','22003','22001','21000','0A000') AND event_datetime AT TIME ZONE 'CST7CDT' BETWEEN CURRENT_TIMESTAMP - INTERVAL '10 minutes' AND CURRENT_TIMESTAMP;", sourceConnection);
+               
+                using NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM enm.tab_notifications where not_state = 3;", sourceConnection);
+                
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
 
@@ -50,19 +50,19 @@ namespace CheckAndResume
                         var rowData = new Dictionary<string, object>
                         {
 
-                       {"param1" , reader["event_id"] },
-                       {"param2" , reader["event_type_id"] },
-                       {"param3" , reader["event_level_id"] },
-                       {"param4" , reader["event_system_id"] },
-                       {"param5" , reader["event_module_id"] },
-                       {"param6" , reader["event_object_id"] },
-                       {"param7" , reader["event_datetime_utc"] },
-                       {"param8" , reader["event_datetime"] },
-                       {"param9" , reader["event_offset"] },
-                       {"param10" , reader["event_code"] },
-                       {"param11" , reader["event_message"] },
-                       {"param12" , reader["event_info"] },
-                       {"param13" , reader["partition_id"] },
+                       {"param1" , reader["id_not"] },
+                       {"param2" , reader["not_created"] },
+                       {"param3" , reader["not_from"] },
+                       {"param4" , reader["not_to"] },
+                       {"param5" , reader["not_type"] },
+                       {"param6" , reader["not_state"] },
+                       {"param7" , reader["not_response"] },
+                       {"param8" , reader["not_updated"] },
+                       {"param9" , reader["not_subject"] },
+                       {"param10" , reader["not_content"] },
+                       {"param11" , reader["not_fls"] },
+                       {"param12" , reader["event_id"] }
+                       
 
 
 
@@ -81,7 +81,7 @@ namespace CheckAndResume
 
                         // Add parameters for all columns
 
-                        await insertCommandIN.ExecuteNonQueryAsync();
+                        
 
                         var payload = JsonConvert.SerializeObject(rowData);
 

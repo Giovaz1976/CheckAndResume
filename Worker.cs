@@ -17,22 +17,26 @@ namespace CheckAndResume
         {
 
 
-            while (!stoppingToken.IsCancellationRequested)
+            while (true)
             {
                 //string sourceConnectionString = "Server=localhost;Port=5436;Database=cl.qfree.zen_0.0.9_202308;user id=qfree;Password=123456;";
-                string sourceConnectionString = "Server=localhost;Database=enm_db;user id=postgres;Password=nolose;";
-              
+                //string sourceConnectionString = "Server=localhost;Database=enm_db;user id=postgres;Password=nolose;";
+                //using (var sourceConnectionString = new NpgsqlConnection("Server=localhost;Database=enm_db;user id=postgres;Password=nolose;"));
+                var sourceConnectionString = new NpgsqlConnection("Server=localhost;Database=enm_db;user id=postgres;Password=nolose;");
 
 
-                using NpgsqlConnection sourceConnection = new NpgsqlConnection(sourceConnectionString);
-                await sourceConnection.OpenAsync();
+
+
+
+
+                await sourceConnectionString.OpenAsync();
 
               
 
                
 
                
-                using NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM enm.tab_notifications where not_state = 3;", sourceConnection);
+                using NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM enm.tab_notifications where not_state = 3;", sourceConnectionString);
                 
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
@@ -72,9 +76,10 @@ namespace CheckAndResume
                         rowData.Add("NotType", 2);
                         rowData.Add("NotState", 1);
                         rowData.Add("NotResponse", 200);
-                        rowData.Add("NotSubject", reader["event_message"]);
-                        rowData.Add("NotContent", reader["event_info"]);
+                        rowData.Add("NotSubject", reader["not_subject"]);
+                        rowData.Add("NotContent", reader["not_content"]);
                         rowData.Add("EventId", reader["event_id"]);
+
 
 
 
@@ -99,7 +104,11 @@ namespace CheckAndResume
 
                             if (response.IsSuccessStatusCode)
                             {
+                                
                                 _logger.LogInformation("API POST request succeeded for a row.");
+
+                                
+
                             }
                             else
                             {
@@ -117,12 +126,12 @@ namespace CheckAndResume
                     Console.WriteLine("Error: " + ex.Message);
                 }
 
-                sourceConnection.Close();
+                sourceConnectionString.Close();
                
 
 
 
-                _logger.LogInformation("Table copy operation completed: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Pending emails send completed: {time}", DateTimeOffset.Now);
                 await Task.Delay(TimeSpan.FromMinutes(10), stoppingToken);
                 //await Task.Delay(15000, stoppingToken);
 

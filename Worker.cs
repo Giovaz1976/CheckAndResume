@@ -49,7 +49,7 @@ namespace CheckAndResume
                     while (await reader.ReadAsync())
                     {
                         // Assuming destination table has the same structure as the source table
-
+                        //int notState = (int)reader["not_state"];
 
                         var rowData = new Dictionary<string, object>
                         {
@@ -107,7 +107,7 @@ namespace CheckAndResume
                                 
                                 _logger.LogInformation("API POST request succeeded for a row.");
 
-                                
+                               
 
                             }
                             else

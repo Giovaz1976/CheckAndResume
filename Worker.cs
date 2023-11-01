@@ -49,7 +49,10 @@ namespace CheckAndResume
                     while (await reader.ReadAsync())
                     {
                         // Assuming destination table has the same structure as the source table
-                        //int notState = (int)reader["not_state"];
+
+
+                        int notState = (int)reader["not_state"];
+                        int id = (int)reader["id_not"];
 
                         var rowData = new Dictionary<string, object>
                         {
@@ -104,10 +107,21 @@ namespace CheckAndResume
 
                             if (response.IsSuccessStatusCode)
                             {
-                                
+
                                 _logger.LogInformation("API POST request succeeded for a row.");
 
-                               
+                                reader.Close();
+
+                                using (var updateCommand = new NpgsqlCommand("UPDATE enm.tab_notifications SET not_state = 1 WHERE id_not = @id_not", sourceConnectionString))
+                                {
+                                    updateCommand.Parameters.AddWithValue("id_not", id);
+                                    await updateCommand.ExecuteNonQueryAsync();
+                                    _logger.LogInformation("NotState updated to 1 for id_not: {id_not}", id);
+                                }
+
+                                _logger.LogInformation("State Changed Successfully");
+
+                                reader.Read();                                                                                         
 
                             }
                             else

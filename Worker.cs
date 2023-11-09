@@ -78,7 +78,7 @@ namespace CheckAndResume
                         using (var httpClient = new HttpClient())
                         {
                             
-                            var apiUrl = "https://localhost:5001/EmailSender/";
+                            var apiUrl = "https://localhost:5000/EmailSender/";
 
                             var content = new StringContent(payload, Encoding.UTF8, "application/json");
                             

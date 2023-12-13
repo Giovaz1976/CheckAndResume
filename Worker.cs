@@ -23,17 +23,11 @@ namespace CheckAndResume
                 var sourceConnectionString = new NpgsqlConnection("Server=localhost;Database=enm_db;user id=postgres;Password=nolose;");
 
 
-
-                await sourceConnectionString.OpenAsync();             
-
-               
-
+                await sourceConnectionString.OpenAsync();    
                
                 using NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM enm.tab_notifications where not_state = 3;", sourceConnectionString);
                 
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
-
-              
 
                 try
                 {
@@ -45,7 +39,6 @@ namespace CheckAndResume
                         var rowData = new Dictionary<string, object>
                         {
 
-                        
 
                             {"IdNot" , reader["id_not"] },
                             {"NotCreated" , reader["not_created"] },
@@ -60,20 +53,11 @@ namespace CheckAndResume
                             {"NotFls" , reader["not_fls"] },
                             {"EventId" , reader["event_id"] },
 
-
-
-
                         };
-
-
-                    
 
 
 
                         var payload = JsonConvert.SerializeObject(rowData);
-
-                       
-
 
                         using (var httpClient = new HttpClient())
                         {
@@ -89,11 +73,7 @@ namespace CheckAndResume
 
                                 _logger.LogInformation("API POST request succeeded for a row.");
 
-                              
-
                                 _logger.LogInformation("State Changed Successfully");
-
-                                                                                                                        
 
                             }
                             else
@@ -103,8 +83,6 @@ namespace CheckAndResume
                         }
                     }
 
-
-
                 }
                 catch (Exception ex)
                 {
@@ -113,9 +91,6 @@ namespace CheckAndResume
 
                 sourceConnectionString.Close();
                
-
-
-
                 _logger.LogInformation("Pending emails send completed: {time}", DateTimeOffset.Now);
                 await Task.Delay(TimeSpan.FromMinutes(30), stoppingToken);
                

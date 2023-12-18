@@ -65,7 +65,9 @@ namespace CheckAndResume
                         using (var httpClient = new HttpClient())
                         {
                             
-                            var apiUrl = "http://localhost:5000/EmailSender/";
+                            var apistr = (from api in db.TabConfs select api.ApiRoot).FirstOrDefault();
+                            
+                            var apiUrl = apistr;
 
                             var content = new StringContent(payload, Encoding.UTF8, "application/json");
                             
@@ -93,9 +95,32 @@ namespace CheckAndResume
                 }
 
                 conn.Close();
-               
+
                 _logger.LogInformation("Pending emails send completed: {time}", DateTimeOffset.Now);
-                await Task.Delay(TimeSpan.FromMinutes(30), stoppingToken);
+
+                var resumeInterval = (from ri in db.TabConfs select ri.ResumeIntervalResume).FirstOrDefault();
+
+                try
+                {
+                    _logger.LogInformation("Waiting execution inteval: {mins}, {time}", DateTimeOffset.Now, resumeInterval + " " + "minute(s)");
+
+                    if (resumeInterval > 0) 
+                    {
+                        await Task.Delay(TimeSpan.FromMinutes(resumeInterval), stoppingToken);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"resume interval is null. Check Conf Table: {DateTimeOffset.Now}");
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+               
+                
+                //await Task.Delay(TimeSpan.FromMinutes(30), stoppingToken);
                
 
             }

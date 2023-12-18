@@ -1,6 +1,8 @@
+using CheckAndResume.Models;
 using Newtonsoft.Json;
 using Npgsql;
 using System.Text;
+using System.Linq;
 
 namespace CheckAndResume
 {
@@ -19,13 +21,14 @@ namespace CheckAndResume
 
             while (true)
             {
-               
-                var sourceConnectionString = new NpgsqlConnection("Server=localhost;Database=enm_db;user id=postgres;Password=nolose;");
 
+                using enm_dbContext db = new();
+                var sourceConnectionString = (from src in db.TabConfs select src.ConnResumeConf).FirstOrDefault();
 
-                await sourceConnectionString.OpenAsync();    
+                using NpgsqlConnection conn = new NpgsqlConnection(sourceConnectionString);
+                await conn.OpenAsync();    
                
-                using NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM enm.tab_notifications where not_state = 3;", sourceConnectionString);
+                using NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM enm.tab_notifications where not_state = 3;", conn);
                 
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
@@ -89,7 +92,7 @@ namespace CheckAndResume
                    Console.WriteLine("Error: " + ex.Message);
                 }
 
-                sourceConnectionString.Close();
+                conn.Close();
                
                 _logger.LogInformation("Pending emails send completed: {time}", DateTimeOffset.Now);
                 await Task.Delay(TimeSpan.FromMinutes(30), stoppingToken);

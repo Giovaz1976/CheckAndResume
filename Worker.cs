@@ -113,10 +113,10 @@ namespace CheckAndResume
                         Console.WriteLine($"resume interval is null. Check Conf Table: {DateTimeOffset.Now}");
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
 
-                    throw;
+                    Console.WriteLine("Error; " + ex.Message);
                 }
                
                 

@@ -21,5 +21,6 @@ namespace CheckAndResume.Models
         public string ConnResumeConf { get; set; } = null!;
         public int? ReadIntervalResume { get; set; }
         public string? ApiRoot { get; set; }
+        public string? ApiPutRoot { get; set; }
     }
 }

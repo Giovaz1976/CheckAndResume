@@ -55,6 +55,7 @@ namespace CheckAndResume
                             {"NotContent" , reader["not_content"] },
                             {"NotFls" , reader["not_fls"] },
                             {"EventId" , reader["event_id"] },
+                            
 
                         };
 
@@ -65,9 +66,10 @@ namespace CheckAndResume
                         using (var httpClient = new HttpClient())
                         {
                             
-                            var apistr = (from api in db.TabConfs select api.ApiRoot).FirstOrDefault();
-                            
+                            var apistr = (from api in db.TabConfs select api.ApiPutRoot).FirstOrDefault();
+
                             var apiUrl = apistr;
+                            
 
                             var content = new StringContent(payload, Encoding.UTF8, "application/json");
                             

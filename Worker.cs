@@ -104,7 +104,7 @@ namespace CheckAndResume
 
                 try
                 {
-                    _logger.LogInformation("Waiting execution inteval: {mins}, {time}", DateTimeOffset.Now, resumeInterval + " " + "minute(s)");
+                    _logger.LogInformation("Waiting execution inteval: {mins}, {time}", DateTimeOffset.Now, resumeInterval.ToString() + " " + "minute(s)");
 
                     if (resumeInterval > 0) 
                     {
@@ -118,7 +118,7 @@ namespace CheckAndResume
                 catch (Exception ex)
                 {
 
-                    Console.WriteLine("Error; " + ex.Message);
+                    Console.WriteLine("An Error ocurred during execution: " + ex.Message);
                 }
                
                 
